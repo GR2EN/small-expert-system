@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("jater/ses/view/home.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("view/home.fxml"));
         primaryStage.setTitle("Малая экспертная система");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
