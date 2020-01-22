@@ -7,10 +7,10 @@
 
 <AnchorPane prefHeight="360.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.jater.ses.controller.AboutController">
-   <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0"
-              AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="10.0">
+   <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true"
+              AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="10.0">
       <Image url="@../../../../assets/qr.png"/>
    </ImageView>
-   <Button fx:id="closeButton" onAction="#closeWindow" layoutX="129.0" layoutY="320.0" mnemonicParsing="false" text="Закрыть"
+   <Button fx:id="closeButton" onMouseClicked="#closeWindow" layoutX="129.0" layoutY="320.0" text="Закрыть"
            AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
 </AnchorPane>
