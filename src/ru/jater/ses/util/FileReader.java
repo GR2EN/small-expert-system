@@ -38,13 +38,15 @@ public class FileReader {
             while (scanner.hasNextLine()) {
                 buffer = scanner.nextLine();
                 if (buffer.equals("Вопросы:")) {
+                    buffer = scanner.nextLine(); // skip title
                     while (buffer.length() != 0) {
                         questions.add(buffer);
                         buffer = scanner.nextLine();
                     }
                 }
-                if (buffer.isEmpty()) continue;
-                hypotheses.add(buffer);
+                if (buffer.length() != 0) {
+                    hypotheses.add(buffer);
+                }
             }
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
             e.printStackTrace();
