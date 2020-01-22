@@ -11,6 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import ru.jater.ses.util.FileReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +22,8 @@ public class HomeController {
     @FXML private MenuItem aboutAuthorButton;
     @FXML private Label hypothesesLabel;
     @FXML private Label questionsLabel;
-    @FXML private ListView<?> hypotheses;
-    @FXML private ListView<?> questions;
+    @FXML private ListView<String> hypotheses;
+    @FXML private ListView<String> questions;
     @FXML private Label question;
     @FXML private Button yesButton;
     @FXML private Button noButton;
@@ -62,6 +63,10 @@ public class HomeController {
             File file = fc.showOpenDialog(null);
             if (file != null) {
                 showComponents();
+                FileReader fileReader = new FileReader(file);
+                //fileReader.getAuthor();
+                fileReader.getQuestions().forEach(question -> questions.getItems().add(question));
+                fileReader.getHypotheses().forEach(hypothese -> hypotheses.getItems().add(hypothese));
             }
         });
     }
