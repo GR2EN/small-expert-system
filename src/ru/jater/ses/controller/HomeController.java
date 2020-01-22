@@ -19,25 +19,25 @@ import java.io.IOException;
 public class HomeController {
 
     @FXML private MenuItem openFileButton;
-    @FXML private MenuItem aboutAuthorButton;
-    @FXML private Label hypothesesLabel;
-    @FXML private Label questionsLabel;
     @FXML private ListView<String> hypotheses;
     @FXML private ListView<String> questions;
     @FXML private Label question;
-    @FXML private Button yesButton;
     @FXML private Button noButton;
-    @FXML private Button notSureButton;
+    @FXML private Button yesButton;
+    @FXML private Button neutralButton;
+    @FXML private Button ratherYesButton;
+    @FXML private Button ratherNoButton;
+    @FXML private Label aboutAuthor;
+    @FXML private Button startButton;
 
-    private void showComponents() {
-        hypothesesLabel.setVisible(true);
-        hypotheses.setVisible(true);
-        questionsLabel.setVisible(true);
-        questions.setVisible(true);
-        question.setVisible(true);
-        yesButton.setVisible(true);
-        noButton.setVisible(true);
-        notSureButton.setVisible(true);
+    private void enableComponents() {
+        hypotheses.setDisable(false);
+        questions.setDisable(false);
+        yesButton.setDisable(false);
+        noButton.setDisable(false);
+        neutralButton.setDisable(false);
+        ratherYesButton.setDisable(false);
+        ratherNoButton.setDisable(false);
     }
 
     @FXML
@@ -56,15 +56,21 @@ public class HomeController {
     }
 
     @FXML
+    private void startTest() {
+        startButton.setDisable(true);
+        enableComponents();
+    }
+
+    @FXML
     void initialize() {
         openFileButton.setOnAction(actionEvent -> {
             FileChooser fc = new FileChooser();
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("База знаний экспертной системы", "*.mkb"));
             File file = fc.showOpenDialog(null);
             if (file != null) {
-                showComponents();
+                startButton.setDisable(false);
                 FileReader fileReader = new FileReader(file);
-                //fileReader.getAuthor();
+                aboutAuthor.setText(fileReader.getAuthor());
                 fileReader.getQuestions().forEach(question -> questions.getItems().add(question));
                 fileReader.getHypotheses().forEach(hypothese -> hypotheses.getItems().add(hypothese));
             }
