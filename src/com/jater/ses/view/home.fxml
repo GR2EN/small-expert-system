@@ -9,43 +9,29 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="560.0"
-            prefWidth="840.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.jater.ses.controller.HomeController">
-    <MenuBar layoutX="26.0" layoutY="31.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-             AnchorPane.topAnchor="0.0">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="560.0" prefWidth="840.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jater.ses.controller.HomeController">
+    <MenuBar layoutX="26.0" layoutY="31.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Menu mnemonicParsing="false" text="Файл">
-            <MenuItem fx:id="openFileMenuItem" mnemonicParsing="false" text="Открыть"/>
+            <MenuItem fx:id="openFileButton" mnemonicParsing="false" text="Открыть" />
         </Menu>
-        <Menu mnemonicParsing="false" text="Помощь">
-            <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="Об авторе"/>
+        <Menu mnemonicParsing="false" text="О программе">
+            <MenuItem fx:id="aboutAuthorButton" onAction="#showAboutAuthor" mnemonicParsing="false" text="Автор" />
         </Menu>
     </MenuBar>
-    <AnchorPane layoutX="37.0" layoutY="40.0" prefHeight="200.0" prefWidth="240.0" AnchorPane.bottomAnchor="10.0"
-                AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="39.0">
-        <Label layoutX="23.0" layoutY="38.0" prefHeight="30.0" prefWidth="240.0" text="Гипотезы:"
-               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-        <ListView fx:id="hypothesesList" layoutY="30.0" prefHeight="225.0" prefWidth="240.0"
-                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0"/>
-        <Label layoutY="260.0" prefHeight="30.0" prefWidth="240.0" text="Вопросы:" AnchorPane.leftAnchor="0.0"
-               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0"/>
-        <ListView fx:id="questionsList" layoutY="293.0" prefHeight="225.0" prefWidth="240.0"
-                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="290.0"/>
+    <AnchorPane layoutX="37.0" layoutY="40.0" prefHeight="200.0" prefWidth="240.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="39.0">
+        <Label fx:id="hypothesesLabel" layoutX="23.0" layoutY="38.0" prefHeight="30.0" prefWidth="240.0" text="Гипотезы:" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+        <ListView fx:id="hypotheses" layoutY="30.0" prefHeight="225.0" prefWidth="240.0" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+        <Label fx:id="questionsLabel" layoutY="260.0" prefHeight="30.0" prefWidth="240.0" text="Вопросы:" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0" />
+        <ListView fx:id="questions" layoutY="293.0" prefHeight="225.0" prefWidth="240.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="290.0" />
     </AnchorPane>
-    <AnchorPane layoutX="250.0" layoutY="73.0" prefHeight="220.0" prefWidth="570.0" AnchorPane.leftAnchor="260.0"
-                AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0">
-        <Label fx:id="questionLabel" alignment="TOP_LEFT" prefHeight="176.0" prefWidth="570.0" wrapText="true"
-               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <AnchorPane layoutX="250.0" layoutY="73.0" prefHeight="220.0" prefWidth="570.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0">
+        <Label fx:id="question" alignment="TOP_LEFT" prefHeight="176.0" prefWidth="570.0" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <font>
-                <Font size="16.0"/>
+                <Font size="16.0" />
             </font>
         </Label>
-        <Button fx:id="yesButton" layoutX="165.0" layoutY="193.0" mnemonicParsing="false" prefHeight="30.0"
-                prefWidth="80.0" text="Да" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0"/>
-        <Button fx:id="noButton" layoutX="245.0" layoutY="191.0" mnemonicParsing="false" prefHeight="30.0"
-                prefWidth="80.0" text="Нет" AnchorPane.bottomAnchor="0.0"/>
-        <Button fx:id="notSureButton" layoutX="325.0" layoutY="192.0" mnemonicParsing="false" prefHeight="30.0"
-                prefWidth="80.0" text="Не знаю" AnchorPane.leftAnchor="340.0"/>
+        <Button fx:id="yesButton" layoutX="165.0" layoutY="193.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Да" textAlignment="CENTER" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" />
+        <Button fx:id="noButton" layoutX="245.0" layoutY="191.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Нет" textAlignment="CENTER" visible="false" AnchorPane.bottomAnchor="0.0" />
+        <Button fx:id="notSureButton" layoutX="325.0" layoutY="192.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Не знаю" textAlignment="CENTER" visible="false" AnchorPane.leftAnchor="340.0" />
     </AnchorPane>
 </AnchorPane>
