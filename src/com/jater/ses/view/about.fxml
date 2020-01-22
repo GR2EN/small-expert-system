@@ -11,6 +11,6 @@
               AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="10.0">
       <Image url="@../../../../assets/qr.png"/>
    </ImageView>
-   <Button fx:id="closeButton" layoutX="129.0" layoutY="320.0" mnemonicParsing="false" text="Закрыть"
+   <Button fx:id="closeButton" onAction="#closeWindow" layoutX="129.0" layoutY="320.0" mnemonicParsing="false" text="Закрыть"
            AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"/>
 </AnchorPane>

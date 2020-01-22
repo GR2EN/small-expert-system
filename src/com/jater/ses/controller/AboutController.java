@@ -10,11 +10,9 @@ public class AboutController {
     private Button closeButton;
 
     @FXML
-    void initialize() {
-        closeButton.setOnAction(actionEvent -> {
-            Stage stage = (Stage) closeButton.getScene().getWindow();
-            stage.close();
-        });
+    void closeWindow() {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();
     }
 
 }
