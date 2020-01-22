@@ -1,4 +1,4 @@
-package com.jater.ses.controller;
+package ru.jater.ses.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

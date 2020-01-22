@@ -1,4 +1,4 @@
-package com.jater.ses;
+package ru.jater.ses;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
