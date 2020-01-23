@@ -143,21 +143,20 @@ public class HomeController {
 
             for (int k = 1; k < lineName.length; k++) {
                 if (index == Double.parseDouble(lineName[k])) {
-                    double cons = 1000.0000;
                     if (probability > NOT_SURE) {
                         double pPositive = Double.parseDouble(lineName[k + 1]);
                         double pNegative = Double.parseDouble(lineName[k + 2]);
                         double pAp = Double.parseDouble(lineName[1]);
                         double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
-                        double pApCorrection = Math.round((pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE)) * cons) / cons;
-                        lineName[1] = Double.toString(pApCorrection);
+                        double pApCorrection = pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE);
+                        lineName[1] = String.format("%.5f", pApCorrection);
                     } else if (probability < NOT_SURE) {
                         double pPositive = Double.parseDouble(lineName[k + 1]);
                         double pNegative = Double.parseDouble(lineName[k + 2]);
                         double pAp = Double.parseDouble(lineName[1]);
                         double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
-                        double pApCorrection = Math.round((posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE)) * cons) / cons;
-                        lineName[1] = Double.toString(pApCorrection);
+                        double pApCorrection = posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE);
+                        lineName[1] = String.format("%.5f", pApCorrection);
                     }
                 }
             }
