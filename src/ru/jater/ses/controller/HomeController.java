@@ -15,8 +15,18 @@ import ru.jater.ses.util.FileReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class HomeController {
+
+    private static final double YES = 1.00;
+    private static final double RATHER_YES = 0.75;
+    private static final double NOT_SURE = 0.50;
+    private static final double RATHER_NO = 0.25;
+    private static final double NO = 0.00;
+
+    private ArrayList<String> questionsBuf;
+    private ArrayList<String> hypothesesBuf;
 
     @FXML private MenuItem openFileButton;
     @FXML private ListView<String> hypotheses;
@@ -38,6 +48,25 @@ public class HomeController {
         neutralButton.setDisable(false);
         ratherYesButton.setDisable(false);
         ratherNoButton.setDisable(false);
+    }
+
+    private void initData() {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("База знаний экспертной системы", "*.mkb"));
+        File file = fc.showOpenDialog(null);
+        if (file != null) {
+            startButton.setDisable(false);
+            FileReader fileReader = new FileReader(file);
+            aboutAuthor.setText(fileReader.getAuthor());
+            questionsBuf.addAll(fileReader.getQuestions());
+            hypothesesBuf.addAll(fileReader.getHypotheses());
+
+            questionsBuf.forEach(question -> questions.getItems().add(question));
+            hypothesesBuf.forEach(hypothese -> {
+                String[] buf = hypothese.split(",");
+                hypotheses.getItems().add(buf[0] + " [" + buf[1] + "]");
+            });
+        }
     }
 
     @FXML
@@ -63,17 +92,11 @@ public class HomeController {
 
     @FXML
     void initialize() {
+        questionsBuf = new ArrayList<>();
+        hypothesesBuf = new ArrayList<>();
+
         openFileButton.setOnAction(actionEvent -> {
-            FileChooser fc = new FileChooser();
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("База знаний экспертной системы", "*.mkb"));
-            File file = fc.showOpenDialog(null);
-            if (file != null) {
-                startButton.setDisable(false);
-                FileReader fileReader = new FileReader(file);
-                aboutAuthor.setText(fileReader.getAuthor());
-                fileReader.getQuestions().forEach(question -> questions.getItems().add(question));
-                fileReader.getHypotheses().forEach(hypothese -> hypotheses.getItems().add(hypothese));
-            }
+            initData();
         });
     }
 

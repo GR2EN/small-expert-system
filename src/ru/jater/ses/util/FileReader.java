@@ -21,9 +21,10 @@ public class FileReader {
     }
 
     private void parse() {
+        BufferedReader bf = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(this.file), FILE_ENCODING));
-            Scanner scanner = new Scanner(bufferedReader);
+            bf = new BufferedReader(new InputStreamReader(new FileInputStream(this.file), FILE_ENCODING));
+            Scanner scanner = new Scanner(bf);
             StringBuilder sb = new StringBuilder();
             String buffer;
             while (scanner.hasNextLine()) {
@@ -38,7 +39,7 @@ public class FileReader {
             while (scanner.hasNextLine()) {
                 buffer = scanner.nextLine();
                 if (buffer.equals("Вопросы:")) {
-                    buffer = scanner.nextLine(); // skip title
+                    buffer = scanner.nextLine();
                     while (buffer.length() != 0) {
                         questions.add(buffer);
                         buffer = scanner.nextLine();
@@ -50,6 +51,14 @@ public class FileReader {
             }
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (bf != null) {
+                    bf.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
