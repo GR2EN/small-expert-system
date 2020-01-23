@@ -137,45 +137,44 @@ public class HomeController {
     }
 
     private void action(double probability) {
-        if (index < questionsBuf.size()) {
-            hypothesesList.getItems().clear();
-            question.setText(questionsList.getItems().get(index));
+        for (int i = 0; i < hypothesesBuf.size(); i++) {
+            String str = hypothesesBuf.get(i);
+            String[] lineName = str.split(",");
 
-            for (int i = 0; i < hypothesesBuf.size(); i++) {
-                String str = hypothesesBuf.get(i);
-                String[] lineName = str.split(",");
-
-                for (int k = 1; k < lineName.length; k++) {
-                    if (index == Double.parseDouble(lineName[k])) {
-                        double cons = 1000.0000;
-                        if (probability > NOT_SURE) {
-                            double pPositive = Double.parseDouble(lineName[k + 1]);
-                            double pNegative = Double.parseDouble(lineName[k + 2]);
-                            double pAp = Double.parseDouble(lineName[1]);
-                            double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
-                            double pApCorrection = Math.round((pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE)) * cons) / cons;
-                            lineName[1] = Double.toString(pApCorrection);
-                        } else if (probability < NOT_SURE) {
-                            double pPositive = Double.parseDouble(lineName[k + 1]);
-                            double pNegative = Double.parseDouble(lineName[k + 2]);
-                            double pAp = Double.parseDouble(lineName[1]);
-                            double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
-                            double pApCorrection = Math.round((posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE)) * cons) / cons;
-                            lineName[1] = Double.toString(pApCorrection);
-                        }
+            for (int k = 1; k < lineName.length; k++) {
+                if (index == Double.parseDouble(lineName[k])) {
+                    double cons = 1000.0000;
+                    if (probability > NOT_SURE) {
+                        double pPositive = Double.parseDouble(lineName[k + 1]);
+                        double pNegative = Double.parseDouble(lineName[k + 2]);
+                        double pAp = Double.parseDouble(lineName[1]);
+                        double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
+                        double pApCorrection = Math.round((pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE)) * cons) / cons;
+                        lineName[1] = Double.toString(pApCorrection);
+                    } else if (probability < NOT_SURE) {
+                        double pPositive = Double.parseDouble(lineName[k + 1]);
+                        double pNegative = Double.parseDouble(lineName[k + 2]);
+                        double pAp = Double.parseDouble(lineName[1]);
+                        double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
+                        double pApCorrection = Math.round((posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE)) * cons) / cons;
+                        lineName[1] = Double.toString(pApCorrection);
                     }
                 }
-
-                hypothesesInList.add("[" + lineName[1] + "] " + lineName[0]);
-                str = String.join(",", lineName);
-                hypothesesBuf.set(i, str);
-                System.out.print("");
             }
 
-            hypothesesInList.sort(Collections.reverseOrder());
-            hypothesesInList.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
-            hypothesesInList.clear();
-            index++;
+            hypothesesInList.add("[" + lineName[1] + "] " + lineName[0]);
+            str = String.join(",", lineName);
+            hypothesesBuf.set(i, str);
+        }
+
+        hypothesesInList.sort(Collections.reverseOrder());
+        hypothesesList.getItems().clear();
+        hypothesesInList.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
+        hypothesesInList.clear();
+        index++;
+
+        if (index <= questionsBuf.size()) {
+            question.setText(questionsList.getItems().get(index - 1));
         } else {
             question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1].toLowerCase());
             disableButtons();
