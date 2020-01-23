@@ -16,6 +16,7 @@ import ru.jater.ses.util.FileReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class HomeController {
 
@@ -27,11 +28,12 @@ public class HomeController {
 
     private ArrayList<String> questionsBuf;
     private ArrayList<String> hypothesesBuf;
+    private ArrayList<String> hypothesesInList;
     private int index;
 
     @FXML private MenuItem openFileButton;
-    @FXML private ListView<String> hypotheses;
-    @FXML private ListView<String> questions;
+    @FXML private ListView<String> hypothesesList;
+    @FXML private ListView<String> questionsList;
     @FXML private Label question;
     @FXML private Button noButton;
     @FXML private Button yesButton;
@@ -42,8 +44,8 @@ public class HomeController {
     @FXML private Button startButton;
 
     private void enableComponents() {
-        hypotheses.setDisable(false);
-        questions.setDisable(false);
+        hypothesesList.setDisable(false);
+        questionsList.setDisable(false);
         yesButton.setDisable(false);
         noButton.setDisable(false);
         neutralButton.setDisable(false);
@@ -60,24 +62,24 @@ public class HomeController {
     }
 
     private void disableLists() {
-        hypotheses.setDisable(true);
-        questions.setDisable(true);
+        hypothesesList.setDisable(true);
+        questionsList.setDisable(true);
     }
 
     private void clear() {
         aboutAuthor.setText("");
         questionsBuf.clear();
         hypothesesBuf.clear();
-        questions.getItems().clear();
-        hypotheses.getItems().clear();
-
-        disableLists();
+        question.setText("");
+        questionsList.getItems().clear();
+        hypothesesList.getItems().clear();
+        index = 1;
     }
 
     private void initData() {
         disableButtons();
+        disableLists();
         clear();
-        index = 0;
 
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("База знаний экспертной системы", "*.mkb"));
@@ -89,16 +91,12 @@ public class HomeController {
             questionsBuf.addAll(fileReader.getQuestions());
             hypothesesBuf.addAll(fileReader.getHypotheses());
 
-            questionsBuf.forEach(question -> questions.getItems().add(question));
+            questionsBuf.forEach(question -> questionsList.getItems().add(question));
             hypothesesBuf.forEach(hypothese -> {
                 String[] buf = hypothese.split(",");
-                hypotheses.getItems().add(buf[0] + " [" + buf[1] + "]");
+                hypothesesList.getItems().add("[" + buf[1] + "] " + buf[0]);
             });
         }
-    }
-
-    private void begin() {
-        question.setText(questions.getItems().get(index));
     }
 
     @FXML
@@ -120,43 +118,66 @@ public class HomeController {
     private void startTest() {
         startButton.setDisable(true);
         enableComponents();
-
-        begin();
+        question.setText(questionsList.getItems().get(0));
     }
 
     @FXML
     void initialize() {
         questionsBuf = new ArrayList<>();
         hypothesesBuf = new ArrayList<>();
-        index = 0;
+        hypothesesInList = new ArrayList<>();
 
-        openFileButton.setOnAction(actionEvent -> {
-            initData();
-        });
+        openFileButton.setOnAction(actionEvent -> initData());
 
-        yesButton.setOnAction(actionEvent -> {
-            action(YES);
-        });
-        ratherYesButton.setOnAction(actionEvent -> {
-            action(RATHER_YES);
-        });
-        neutralButton.setOnAction(actionEvent -> {
-            action(NOT_SURE);
-        });
-        ratherNoButton.setOnAction(actionEvent -> {
-            action(RATHER_NO);
-        });
-        noButton.setOnAction(actionEvent -> {
-            action(NO);
-        });
+        yesButton.setOnAction(actionEvent -> action(YES));
+        ratherYesButton.setOnAction(actionEvent -> action(RATHER_YES));
+        neutralButton.setOnAction(actionEvent -> action(NOT_SURE));
+        ratherNoButton.setOnAction(actionEvent -> action(RATHER_NO));
+        noButton.setOnAction(actionEvent -> action(NO));
     }
 
     private void action(double probability) {
-        if (index < questionsBuf.size() - 1) {
+        if (index < questionsBuf.size()) {
+            hypothesesList.getItems().clear();
+            question.setText(questionsList.getItems().get(index));
+
+            for (int i = 0; i < hypothesesBuf.size(); i++) {
+                String str = hypothesesBuf.get(i);
+                String[] lineName = str.split(",");
+
+                for (int k = 1; k < lineName.length; k++) {
+                    if (index == Double.parseDouble(lineName[k])) {
+                        double cons = 1000.0000;
+                        if (probability > NOT_SURE) {
+                            double pPositive = Double.parseDouble(lineName[k + 1]);
+                            double pNegative = Double.parseDouble(lineName[k + 2]);
+                            double pAp = Double.parseDouble(lineName[1]);
+                            double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
+                            double pApCorrection = Math.round((pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE)) * cons) / cons;
+                            lineName[1] = Double.toString(pApCorrection);
+                        } else if (probability < NOT_SURE) {
+                            double pPositive = Double.parseDouble(lineName[k + 1]);
+                            double pNegative = Double.parseDouble(lineName[k + 2]);
+                            double pAp = Double.parseDouble(lineName[1]);
+                            double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
+                            double pApCorrection = Math.round((posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE)) * cons) / cons;
+                            lineName[1] = Double.toString(pApCorrection);
+                        }
+                    }
+                }
+
+                hypothesesInList.add("[" + lineName[1] + "] " + lineName[0]);
+                str = String.join(",", lineName);
+                hypothesesBuf.set(i, str);
+                System.out.print("");
+            }
+
+            hypothesesInList.sort(Collections.reverseOrder());
+            hypothesesInList.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
+            hypothesesInList.clear();
             index++;
-            question.setText(questions.getItems().get(index));
         } else {
-            question.setText("Вероятно это " + hypotheses.getItems().get(0));
+            question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1].toLowerCase());
             disableButtons();
         }
     }
