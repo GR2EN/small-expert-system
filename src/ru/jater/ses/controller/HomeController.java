@@ -175,7 +175,7 @@ public class HomeController {
         if (index <= questions.size()) {
             question.setText(questionsList.getItems().get(index - 1));
         } else {
-            question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1].toLowerCase());
+            question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1]);
             disableButtons();
         }
     }
