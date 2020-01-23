@@ -26,9 +26,9 @@ public class HomeController {
     private static final double RATHER_NO = 0.25;
     private static final double NO = 0.00;
 
-    private ArrayList<String> questionsBuf;
-    private ArrayList<String> hypothesesBuf;
-    private ArrayList<String> hypothesesInList;
+    private ArrayList<String> questions;
+    private ArrayList<String> hypotheses;
+    private ArrayList<String> hypothesesTitles;
     private int index;
 
     @FXML private MenuItem openFileButton;
@@ -68,8 +68,8 @@ public class HomeController {
 
     private void clear() {
         aboutAuthor.setText("");
-        questionsBuf.clear();
-        hypothesesBuf.clear();
+        questions.clear();
+        hypotheses.clear();
         question.setText("");
         questionsList.getItems().clear();
         hypothesesList.getItems().clear();
@@ -88,11 +88,11 @@ public class HomeController {
             startButton.setDisable(false);
             FileReader fileReader = new FileReader(file);
             aboutAuthor.setText(fileReader.getAuthor());
-            questionsBuf.addAll(fileReader.getQuestions());
-            hypothesesBuf.addAll(fileReader.getHypotheses());
+            questions.addAll(fileReader.getQuestions());
+            hypotheses.addAll(fileReader.getHypotheses());
 
-            questionsBuf.forEach(question -> questionsList.getItems().add(question));
-            hypothesesBuf.forEach(hypothese -> {
+            questions.forEach(question -> questionsList.getItems().add(question));
+            hypotheses.forEach(hypothese -> {
                 String[] buf = hypothese.split(",");
                 hypothesesList.getItems().add("[" + buf[1] + "] " + buf[0]);
             });
@@ -123,9 +123,9 @@ public class HomeController {
 
     @FXML
     void initialize() {
-        questionsBuf = new ArrayList<>();
-        hypothesesBuf = new ArrayList<>();
-        hypothesesInList = new ArrayList<>();
+        questions = new ArrayList<>();
+        hypotheses = new ArrayList<>();
+        hypothesesTitles = new ArrayList<>();
 
         openFileButton.setOnAction(actionEvent -> initData());
 
@@ -137,8 +137,8 @@ public class HomeController {
     }
 
     private void action(double probability) {
-        for (int i = 0; i < hypothesesBuf.size(); i++) {
-            String str = hypothesesBuf.get(i);
+        for (int i = 0; i < hypotheses.size(); i++) {
+            String str = hypotheses.get(i);
             String[] lineName = str.split(",");
 
             for (int k = 1; k < lineName.length; k++) {
@@ -162,18 +162,18 @@ public class HomeController {
                 }
             }
 
-            hypothesesInList.add("[" + lineName[1] + "] " + lineName[0]);
+            hypothesesTitles.add("[" + lineName[1] + "] " + lineName[0]);
             str = String.join(",", lineName);
-            hypothesesBuf.set(i, str);
+            hypotheses.set(i, str);
         }
 
-        hypothesesInList.sort(Collections.reverseOrder());
+        hypothesesTitles.sort(Collections.reverseOrder());
         hypothesesList.getItems().clear();
-        hypothesesInList.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
-        hypothesesInList.clear();
+        hypothesesTitles.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
+        hypothesesTitles.clear();
         index++;
 
-        if (index <= questionsBuf.size()) {
+        if (index <= questions.size()) {
             question.setText(questionsList.getItems().get(index - 1));
         } else {
             question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1].toLowerCase());
