@@ -27,6 +27,7 @@ public class HomeController {
 
     private ArrayList<String> questionsBuf;
     private ArrayList<String> hypothesesBuf;
+    private int index;
 
     @FXML private MenuItem openFileButton;
     @FXML private ListView<String> hypotheses;
@@ -50,7 +51,34 @@ public class HomeController {
         ratherNoButton.setDisable(false);
     }
 
+    private void disableButtons() {
+        yesButton.setDisable(true);
+        noButton.setDisable(true);
+        neutralButton.setDisable(true);
+        ratherYesButton.setDisable(true);
+        ratherNoButton.setDisable(true);
+    }
+
+    private void disableLists() {
+        hypotheses.setDisable(true);
+        questions.setDisable(true);
+    }
+
+    private void clear() {
+        aboutAuthor.setText("");
+        questionsBuf.clear();
+        hypothesesBuf.clear();
+        questions.getItems().clear();
+        hypotheses.getItems().clear();
+
+        disableLists();
+    }
+
     private void initData() {
+        disableButtons();
+        clear();
+        index = 0;
+
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("База знаний экспертной системы", "*.mkb"));
         File file = fc.showOpenDialog(null);
@@ -67,6 +95,10 @@ public class HomeController {
                 hypotheses.getItems().add(buf[0] + " [" + buf[1] + "]");
             });
         }
+    }
+
+    private void begin() {
+        question.setText(questions.getItems().get(index));
     }
 
     @FXML
@@ -88,16 +120,45 @@ public class HomeController {
     private void startTest() {
         startButton.setDisable(true);
         enableComponents();
+
+        begin();
     }
 
     @FXML
     void initialize() {
         questionsBuf = new ArrayList<>();
         hypothesesBuf = new ArrayList<>();
+        index = 0;
 
         openFileButton.setOnAction(actionEvent -> {
             initData();
         });
+
+        yesButton.setOnAction(actionEvent -> {
+            action(YES);
+        });
+        ratherYesButton.setOnAction(actionEvent -> {
+            action(RATHER_YES);
+        });
+        neutralButton.setOnAction(actionEvent -> {
+            action(NOT_SURE);
+        });
+        ratherNoButton.setOnAction(actionEvent -> {
+            action(RATHER_NO);
+        });
+        noButton.setOnAction(actionEvent -> {
+            action(NO);
+        });
+    }
+
+    private void action(double probability) {
+        if (index < questionsBuf.size() - 1) {
+            index++;
+            question.setText(questions.getItems().get(index));
+        } else {
+            question.setText("Вероятно это " + hypotheses.getItems().get(0));
+            disableButtons();
+        }
     }
 
 }
