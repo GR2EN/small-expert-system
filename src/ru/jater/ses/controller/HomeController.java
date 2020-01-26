@@ -11,12 +11,14 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import ru.jater.ses.entity.Hypothese;
 import ru.jater.ses.util.FileReader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class HomeController {
 
@@ -27,9 +29,8 @@ public class HomeController {
     private static final double NO = 0.00;
 
     private ArrayList<String> questions;
-    private ArrayList<String> hypotheses;
-    private ArrayList<String> hypothesesTitles;
-    private int index;
+    private List<Hypothese> hypotheses;
+    private int questionId;
 
     @FXML private MenuItem openFileButton;
     @FXML private ListView<String> hypothesesList;
@@ -73,7 +74,7 @@ public class HomeController {
         question.setText("");
         questionsList.getItems().clear();
         hypothesesList.getItems().clear();
-        index = 1;
+        questionId = 1;
     }
 
     private void initData() {
@@ -92,10 +93,7 @@ public class HomeController {
             hypotheses.addAll(fileReader.getHypotheses());
 
             questions.forEach(question -> questionsList.getItems().add(question));
-            hypotheses.forEach(hypothese -> {
-                String[] buf = hypothese.split(",");
-                hypothesesList.getItems().add("[" + buf[1] + "] " + buf[0]);
-            });
+            hypotheses.forEach(hypothese -> hypothesesList.getItems().add(hypothese.toString()));
         }
     }
 
@@ -125,7 +123,6 @@ public class HomeController {
     void initialize() {
         questions = new ArrayList<>();
         hypotheses = new ArrayList<>();
-        hypothesesTitles = new ArrayList<>();
 
         openFileButton.setOnAction(actionEvent -> initData());
 
@@ -137,45 +134,30 @@ public class HomeController {
     }
 
     private void action(double probability) {
-        for (int i = 0; i < hypotheses.size(); i++) {
-            String str = hypotheses.get(i);
-            String[] lineName = str.split(",");
-
-            for (int k = 1; k < lineName.length; k++) {
-                if (index == Double.parseDouble(lineName[k])) {
-                    if (probability > NOT_SURE) {
-                        double pPositive = Double.parseDouble(lineName[k + 1]);
-                        double pNegative = Double.parseDouble(lineName[k + 2]);
-                        double pAp = Double.parseDouble(lineName[1]);
-                        double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
-                        double pApCorrection = pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE);
-                        lineName[1] = String.format("%.5f", pApCorrection);
-                    } else if (probability < NOT_SURE) {
-                        double pPositive = Double.parseDouble(lineName[k + 1]);
-                        double pNegative = Double.parseDouble(lineName[k + 2]);
-                        double pAp = Double.parseDouble(lineName[1]);
-                        double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
-                        double pApCorrection = posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE);
-                        lineName[1] = String.format("%.5f", pApCorrection);
-                    }
-                }
+        for (Hypothese hypothese : hypotheses) {
+            double pPositive = hypothese.getpPositive(questionId);
+            double pNegative = hypothese.getpNegative(questionId);
+            double pAp = hypotheses.get(questionId).getpAposterior();
+            if (probability > NOT_SURE) {
+                double posteriorProbability = (pPositive * pAp) / (pPositive * pAp + pNegative * (1 - pAp));
+                double pApCorrection = pAp + ((probability - NOT_SURE) * (posteriorProbability - pAp)) / (NOT_SURE);
+                hypothese.setpAposterior(pApCorrection);
+            } else if (probability < NOT_SURE) {
+                double posteriorProb = ((1 - pPositive) * pAp) / ((1 - pPositive) * pAp + (1 - pNegative) * (1 - pAp));
+                double pApCorrection = posteriorProb + (probability * (pAp - posteriorProb)) / (NOT_SURE);
+                hypothese.setpAposterior(pApCorrection);
             }
-
-            hypothesesTitles.add("[" + lineName[1] + "] " + lineName[0]);
-            str = String.join(",", lineName);
-            hypotheses.set(i, str);
         }
 
-        hypothesesTitles.sort(Collections.reverseOrder());
+        hypotheses.sort(Collections.reverseOrder());
         hypothesesList.getItems().clear();
-        hypothesesTitles.forEach(hypothese -> hypothesesList.getItems().add(hypothese));
-        hypothesesTitles.clear();
-        index++;
+        hypotheses.forEach(hypo -> hypothesesList.getItems().add(hypo.toString()));
+        questionId++;
 
-        if (index <= questions.size()) {
-            question.setText(questionsList.getItems().get(index - 1));
+        if (questionId <= questions.size()) {
+            question.setText(questionsList.getItems().get(questionId - 1));
         } else {
-            question.setText("Вероятно это " + hypothesesList.getItems().get(0).split("]")[1]);
+            question.setText("Вероятно это " + hypothesesList.getItems().get(0));
             disableButtons();
         }
     }

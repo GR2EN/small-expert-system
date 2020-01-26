@@ -1,7 +1,11 @@
 package ru.jater.ses.util;
 
+import ru.jater.ses.entity.Hypothese;
+import ru.jater.ses.entity.Probability;
+
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileReader {
@@ -9,7 +13,7 @@ public class FileReader {
     private static final String FILE_ENCODING = "Windows-1251";
 
     private ArrayList<String> questions;
-    private ArrayList<String> hypotheses;
+    private List<Hypothese> hypotheses;
     private String author;
     private File file;
 
@@ -46,7 +50,13 @@ public class FileReader {
                     }
                 }
                 if (buffer.length() != 0) {
-                    hypotheses.add(buffer);
+                    String[] buf = buffer.split(",");
+                    Hypothese hypothese = new Hypothese(buf[0], Double.parseDouble(buf[1]));
+                    for (int i = 2, j = 1; i < buf.length; i += 3, j++) {
+                        Probability prob = new Probability(Double.parseDouble(buf[i+1]), Double.parseDouble(buf[i+2]));
+                        hypothese.addQuestion(j, prob);
+                    }
+                    hypotheses.add(hypothese);
                 }
             }
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
@@ -70,7 +80,8 @@ public class FileReader {
         return questions;
     }
 
-    public ArrayList<String> getHypotheses() {
+    public List<Hypothese> getHypotheses() {
         return hypotheses;
     }
+
 }
